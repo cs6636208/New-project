@@ -13,10 +13,11 @@ export function MethodCard({ method, selected, onSelect }: MethodCardProps) {
       className={`method-card ${selected ? "selected" : ""}`}
       onClick={() => onSelect(method)}
     >
-      <span className="method-card__eyebrow">{method.key}</span>
+      <span className="method-card__eyebrow">
+        {method.categoryOrder}.{method.orderIndex}
+      </span>
       <strong>{method.title}</strong>
       <p>{method.description}</p>
     </button>
   );
 }
-

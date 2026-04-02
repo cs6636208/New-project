@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../apps/api/node_modules/.prisma/client"
 }
 
 datasource db {
@@ -8,14 +9,26 @@ datasource db {
 }
 
 model Method {
-  id              String           @id @default(cuid())
-  key             String           @unique
-  title           String
-  description     String
-  defaultEquation String
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  runs            ComputationRun[]
+  id                    String           @id @default(cuid())
+  key                   String           @unique
+  categoryKey           String           @default("root-of-equation")
+  categoryLabel         String           @default("Root Of Equation")
+  categoryOrder         Int              @default(1)
+  orderIndex            Int              @default(1)
+  title                 String
+  description           String
+  defaultEquation       String
+  equationLabel         String           @default("Equation f(x)")
+  primaryInputLabel     String           @default("Primary Input")
+  secondaryInputLabel   String?
+  secondaryInputNeeded  Boolean          @default(false)
+  defaultPrimaryInput   Float            @default(0)
+  defaultSecondaryInput Float?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  runs                  ComputationRun[]
+
+  @@index([categoryOrder, orderIndex])
 }
 
 model ComputationRun {
@@ -34,4 +47,3 @@ model ComputationRun {
 
   @@index([methodId, createdAt])
 }
-

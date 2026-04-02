@@ -1,48 +1,46 @@
-import type { IterationRow } from "../types";
+import { getMethodTableColumns } from "../lib/method-config";
+import type { IterationRow, MethodKey } from "../types";
 
 type ResultsTableProps = {
+  methodKey: MethodKey;
   rows: IterationRow[];
 };
 
-function formatNumber(value: number | null) {
-  if (value === null) {
+function formatValue(value: number | string | null | undefined) {
+  if (value === null || value === undefined) {
     return "-";
   }
 
-  return value.toFixed(6);
+  if (typeof value === "number") {
+    return Number.isInteger(value) ? value.toString() : value.toFixed(6);
+  }
+
+  return value;
 }
 
-export function ResultsTable({ rows }: ResultsTableProps) {
+export function ResultsTable({ methodKey, rows }: ResultsTableProps) {
   if (rows.length === 0) {
-    return (
-      <div className="empty-state">
-        Run a calculation to view the iteration table for the selected method.
-      </div>
-    );
+    return <div className="empty-state">Run a calculation to view the iteration table for the selected method.</div>;
   }
+
+  const columns = getMethodTableColumns(methodKey);
 
   return (
     <div className="table-shell">
       <table>
         <thead>
           <tr>
-            <th>Iteration</th>
-            <th>XL</th>
-            <th>XR</th>
-            <th>XM</th>
-            <th>f(XM)</th>
-            <th>Error (%)</th>
+            {columns.map((column) => (
+              <th key={column.key}>{column.label}</th>
+            ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((row) => (
             <tr key={row.iteration}>
-              <td>{row.iteration}</td>
-              <td>{formatNumber(row.xl)}</td>
-              <td>{formatNumber(row.xr)}</td>
-              <td>{formatNumber(row.xm)}</td>
-              <td>{formatNumber(row.fxm)}</td>
-              <td>{formatNumber(row.error)}</td>
+              {columns.map((column) => (
+                <td key={`${row.iteration}-${column.key}`}>{formatValue(row[column.key])}</td>
+              ))}
             </tr>
           ))}
         </tbody>

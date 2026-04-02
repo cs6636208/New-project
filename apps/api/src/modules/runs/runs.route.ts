@@ -17,7 +17,7 @@ runsRouter.get("/", async (request, response, next) => {
 
 runsRouter.post("/:methodKey", async (request, response, next) => {
   try {
-    const methodKey = request.params.methodKey as "bisection" | "false-position";
+    const methodKey = request.params.methodKey;
     const payload = createRunSchema.parse(request.body);
     const run = await createRun(methodKey, payload);
     response.status(201).json(run);
@@ -35,4 +35,3 @@ runsRouter.post("/:methodKey", async (request, response, next) => {
 });
 
 export { runsRouter };
-

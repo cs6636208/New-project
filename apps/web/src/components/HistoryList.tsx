@@ -1,4 +1,5 @@
 import type { Run } from "../types";
+import { describeRunInputs } from "../lib/method-config";
 
 type HistoryListProps = {
   runs: Run[];
@@ -20,8 +21,7 @@ export function HistoryList({ runs, onReuse }: HistoryListProps) {
           </div>
           <p>{run.equation}</p>
           <div className="history-card__meta">
-            <span>XL: {run.xl}</span>
-            <span>XR: {run.xr}</span>
+            <span>{describeRunInputs(run.method, run)}</span>
             <span>Root: {run.root.toFixed(6)}</span>
           </div>
         </button>

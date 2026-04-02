@@ -1,3 +1,7 @@
+import { methodCatalog } from "../modules/methods/method-catalog.js";
+
+const methodKeys = methodCatalog.map((method) => method.key);
+
 export const swaggerSpec = {
   openapi: "3.0.3",
   info: {
@@ -14,25 +18,24 @@ export const swaggerSpec = {
     schemas: {
       CreateRunRequest: {
         type: "object",
-        required: ["equation", "xl", "xr"],
+        required: ["equation", "primaryInput"],
         properties: {
           equation: { type: "string", example: "x^4 - 13" },
-          xl: { type: "number", example: 1.5 },
-          xr: { type: "number", example: 2 },
-          epsilon: { type: "number", example: 0.00001, default: 0.00001 },
-          maxIterations: { type: "integer", example: 50, default: 50 }
+          primaryInput: { type: "number", example: 1.5, description: "XL, X0, or Start X depending on the selected method." },
+          secondaryInput: {
+            type: "number",
+            nullable: true,
+            example: 2,
+            description: "XR, X1, or End X for methods that require two starting values."
+          },
+          epsilon: { type: "number", example: 0.000001, default: 0.000001 },
+          maxIterations: { type: "integer", example: 100, default: 100 }
         }
       },
       IterationRow: {
         type: "object",
-        properties: {
-          iteration: { type: "integer", example: 1 },
-          xl: { type: "number", example: 1.5 },
-          xr: { type: "number", example: 2 },
-          xm: { type: "number", example: 1.75 },
-          fxm: { type: "number", example: -3.62109375 },
-          error: { type: "number", nullable: true, example: 14.285714 }
-        }
+        description: "Method-specific iteration data. Each method returns its own fields together with iteration and error.",
+        additionalProperties: true
       }
     }
   },
@@ -87,7 +90,7 @@ export const swaggerSpec = {
             required: true,
             schema: {
               type: "string",
-              enum: ["bisection", "false-position"]
+              enum: methodKeys
             }
           }
         ],
@@ -113,4 +116,3 @@ export const swaggerSpec = {
     }
   }
 };
-

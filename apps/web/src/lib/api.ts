@@ -4,8 +4,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000
 
 type CreateRunPayload = {
   equation: string;
-  xl: number;
-  xr: number;
+  primaryInput: number;
+  secondaryInput?: number;
   epsilon: number;
   maxIterations: number;
 };
@@ -40,4 +40,3 @@ export async function createRun(methodKey: Method["key"], payload: CreateRunPayl
 
   return parseJson<Run>(response);
 }
-

@@ -1,29 +1,16 @@
 import { PrismaClient } from "@prisma/client";
+import { methodCatalog } from "../apps/api/src/modules/methods/method-catalog.js";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  await prisma.method.upsert({
-    where: { key: "bisection" },
-    update: {},
-    create: {
-      key: "bisection",
-      title: "Bisection Method",
-      description: "Root finding with interval halving and convergence tracking.",
-      defaultEquation: "x^4 - 13"
-    }
-  });
-
-  await prisma.method.upsert({
-    where: { key: "false-position" },
-    update: {},
-    create: {
-      key: "false-position",
-      title: "False Position Method",
-      description: "Root finding with linear interpolation inside the initial bracket.",
-      defaultEquation: "x^3 - x - 2"
-    }
-  });
+  for (const method of methodCatalog) {
+    await prisma.method.upsert({
+      where: { key: method.key },
+      update: method,
+      create: method
+    });
+  }
 }
 
 main()
@@ -35,4 +22,3 @@ main()
     await prisma.$disconnect();
     process.exit(1);
   });
-

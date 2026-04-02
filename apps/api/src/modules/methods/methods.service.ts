@@ -1,37 +1,38 @@
 import { prisma } from "../../lib/prisma.js";
-
-const defaultMethods = [
-  {
-    key: "bisection",
-    title: "Bisection Method",
-    description: "Root finding with interval halving and convergence tracking.",
-    defaultEquation: "x^4 - 13"
-  },
-  {
-    key: "false-position",
-    title: "False Position Method",
-    description: "Root finding with linear interpolation inside the initial bracket.",
-    defaultEquation: "x^3 - x - 2"
-  }
-];
+import { methodCatalog } from "./method-catalog.js";
 
 export async function ensureMethodsSeeded() {
-  const totalMethods = await prisma.method.count();
-
-  if (totalMethods > 0) {
-    return;
-  }
-
-  await prisma.method.createMany({
-    data: defaultMethods
-  });
+  await Promise.all(
+    methodCatalog.map((method) =>
+      prisma.method.upsert({
+        where: {
+          key: method.key
+        },
+        update: method,
+        create: method
+      })
+    )
+  );
 }
 
 export async function listMethods() {
-  return prisma.method.findMany({
+  const methods = (await prisma.method.findMany({
     orderBy: {
       createdAt: "asc"
     }
+  })) as Array<
+    (typeof methodCatalog)[number] & {
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+    }
+  >;
+
+  return methods.sort((left, right) => {
+    if (left.categoryOrder !== right.categoryOrder) {
+      return left.categoryOrder - right.categoryOrder;
+    }
+
+    return left.orderIndex - right.orderIndex;
   });
 }
-

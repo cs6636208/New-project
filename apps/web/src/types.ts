@@ -1,18 +1,33 @@
+export type MethodKey =
+  | "graphical"
+  | "bisection"
+  | "false-position"
+  | "one-point-iteration"
+  | "newton-raphson"
+  | "secant";
+
 export type Method = {
   id: string;
-  key: "bisection" | "false-position";
+  key: MethodKey;
+  categoryKey: string;
+  categoryLabel: string;
+  categoryOrder: number;
+  orderIndex: number;
   title: string;
   description: string;
   defaultEquation: string;
+  equationLabel: string;
+  primaryInputLabel: string;
+  secondaryInputLabel: string | null;
+  secondaryInputNeeded: boolean;
+  defaultPrimaryInput: number;
+  defaultSecondaryInput: number | null;
 };
 
 export type IterationRow = {
   iteration: number;
-  xl: number;
-  xr: number;
-  xm: number;
-  fxm: number;
   error: number | null;
+  [key: string]: number | string | null;
 };
 
 export type Run = {
@@ -27,5 +42,12 @@ export type Run = {
   createdAt: string;
   method: Method;
   iterations: IterationRow[];
+};
+
+export type MethodGroup = {
+  categoryKey: string;
+  categoryLabel: string;
+  categoryOrder: number;
+  methods: Method[];
 };
 
