@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Method {
+  id              String           @id @default(cuid())
+  key             String           @unique
+  title           String
+  description     String
+  defaultEquation String
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  runs            ComputationRun[]
+}
+
+model ComputationRun {
+  id            String   @id @default(cuid())
+  methodId      String
+  equation      String
+  xl            Float
+  xr            Float
+  root          Float
+  epsilon       Float
+  maxIterations Int
+  converged     Boolean
+  iterations    Json
+  createdAt     DateTime @default(now())
+  method        Method   @relation(fields: [methodId], references: [id], onDelete: Cascade)
+
+  @@index([methodId, createdAt])
+}
+
